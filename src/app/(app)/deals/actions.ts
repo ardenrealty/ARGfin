@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import type { DealSource, DealStatus } from '@/types/database'
 
@@ -48,6 +49,7 @@ export async function updateDeal(id: string, formData: FormData) {
   if (error) throw new Error(error.message)
   revalidatePath('/deals')
   revalidatePath(`/deals/${id}`)
+  redirect(`/deals/${id}`)
 }
 
 export async function cancelDeal(id: string) {
