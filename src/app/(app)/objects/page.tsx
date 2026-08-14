@@ -1,9 +1,15 @@
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { ObjectRecord } from '@/types/database'
 import { ObjectForm } from './ObjectForm'
 import { softDeleteObject } from './actions'
 
-export default async function ObjectsPage() {
+export default async function ObjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ edit?: string }>
+}) {
+  const { edit } = await searchParams
   const supabase = await createClient()
   const { data: objects } = (await supabase
     .from('objects')
@@ -11,10 +17,17 @@ export default async function ObjectsPage() {
     .is('deleted_at', null)
     .order('title')) as unknown as { data: ObjectRecord[] }
 
+  const editingObject = edit ? (objects ?? []).find((o) => o.id === edit) : undefined
+
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Объекты</h1>
-      <ObjectForm />
+      <ObjectForm object={editingObject} />
+      {editingObject && (
+        <Link href="/objects" className="text-xs text-gray-600 hover:underline">
+          Отмена
+        </Link>
+      )}
       <table className="w-full border-collapse rounded border bg-white text-sm">
         <thead>
           <tr className="border-b bg-gray-50 text-left">
@@ -34,7 +47,10 @@ export default async function ObjectsPage() {
               <td className="p-2">{o.owner_name}</td>
               <td className="p-2">{o.default_commission_pct ?? '—'}</td>
               <td className="p-2">{o.is_active ? 'да' : 'нет'}</td>
-              <td className="p-2">
+              <td className="p-2 flex items-center gap-2">
+                <Link href={`/objects?edit=${o.id}`} className="text-xs text-blue-600 hover:underline">
+                  Редактировать
+                </Link>
                 <form action={softDeleteObject.bind(null, o.id)}>
                   <button type="submit" className="text-xs text-red-600 hover:underline">
                     Удалить
