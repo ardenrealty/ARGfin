@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import type { Deal, DealPaymentSummary, DealStatus, Employee, ObjectRecord } from '@/types/database'
+import { DealForm } from './DealForm'
 
 const STATUS_LABELS: Record<DealStatus, string> = {
   booked: 'Забронирована',
@@ -27,9 +28,11 @@ export default async function DealsPage({
     status?: string
     source?: string
     employee_id?: string
+    new?: string
   }>
 }) {
   const filters = await searchParams
+  const showCreateForm = filters.new === '1'
   const supabase = await createClient()
 
   let query = supabase
@@ -59,10 +62,21 @@ export default async function DealsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Сделки</h1>
-        <Link href="/deals?new=1" className="rounded bg-gray-900 px-3 py-1 text-sm text-white hover:bg-gray-700">
-          Добавить сделку
-        </Link>
+        {!showCreateForm && (
+          <Link href="/deals?new=1" className="rounded bg-gray-900 px-3 py-1 text-sm text-white hover:bg-gray-700">
+            Добавить сделку
+          </Link>
+        )}
       </div>
+
+      {showCreateForm && (
+        <div className="space-y-2">
+          <DealForm objects={objects ?? []} employees={employees ?? []} />
+          <Link href="/deals" className="text-sm text-blue-600 hover:underline">
+            Отмена
+          </Link>
+        </div>
+      )}
 
       <form className="flex flex-wrap items-end gap-3 rounded border bg-white p-4 text-sm">
         <label className="flex flex-col">
