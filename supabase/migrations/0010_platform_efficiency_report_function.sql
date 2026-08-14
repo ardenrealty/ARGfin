@@ -4,8 +4,12 @@
 -- enum, so the match is case-insensitive equality between the two — this is
 -- an intentional simplification: it only reconciles ad spend whose recorded
 -- platform name matches a deal source value verbatim (case-insensitively).
--- Ad spend logged under an unrelated platform name (or is_general = true)
--- simply won't appear here; that's expected, not a bug.
+-- Ad spend logged under an unrelated platform name simply won't appear here;
+-- that's expected, not a bug. Ad spend is matched purely by platform-name
+-- equality against deals.source; is_general is NOT filtered here (unlike
+-- object_margin_report, which excludes general ads from a single object's
+-- margin) -- this report answers "how much did we spend advertising on
+-- platform X in total," where general spend on that platform still counts.
 create or replace function platform_efficiency_report(p_from date, p_to date)
 returns table (
   source text,
