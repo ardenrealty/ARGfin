@@ -67,3 +67,47 @@ export interface AccountBalance {
   name: string
   balance: number
 }
+
+export type DealStatus = 'booked' | 'prepaid' | 'checked_in' | 'completed' | 'cancelled'
+export type DealSource = 'avito' | 'cian' | 'recommend' | 'other'
+
+export interface Deal {
+  id: string
+  user_id: string
+  object_id: string | null
+  client_name: string
+  client_phone: string | null
+  booking_date: string
+  checkin_date: string | null
+  checkout_date: string | null
+  deal_amount: number
+  commission_pct: number | null
+  commission_amount: number | null
+  source: DealSource | null
+  closed_by_employee_id: string | null
+  status: DealStatus
+  note: string | null
+}
+
+export type PaymentKind = 'prepay' | 'balance' | 'full'
+
+export interface Payment {
+  id: string
+  user_id: string
+  deal_id: string
+  kind: PaymentKind
+  amount: number
+  paid_at: string
+  recognized_at: string | null
+  account_id: string
+  note: string | null
+}
+
+export interface DealPaymentSummary {
+  deal_id: string
+  user_id: string
+  commission_amount: number
+  status: DealStatus
+  total_paid: number
+  remaining: number
+}
