@@ -432,41 +432,43 @@ begin;
 select plan(8);
 
 select ok(
-  (select relrowsecurity from pg_class where relname = 'accounts'),
+  (select relrowsecurity from pg_class where relname = 'accounts' and relnamespace = 'public'::regnamespace),
   'accounts has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'objects'),
+  (select relrowsecurity from pg_class where relname = 'objects' and relnamespace = 'public'::regnamespace),
   'objects has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'employees'),
+  (select relrowsecurity from pg_class where relname = 'employees' and relnamespace = 'public'::regnamespace),
   'employees has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'categories'),
+  (select relrowsecurity from pg_class where relname = 'categories' and relnamespace = 'public'::regnamespace),
   'categories has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'deals'),
+  (select relrowsecurity from pg_class where relname = 'deals' and relnamespace = 'public'::regnamespace),
   'deals has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'payments'),
+  (select relrowsecurity from pg_class where relname = 'payments' and relnamespace = 'public'::regnamespace),
   'payments has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'transactions'),
+  (select relrowsecurity from pg_class where relname = 'transactions' and relnamespace = 'public'::regnamespace),
   'transactions has RLS enabled'
 );
 select ok(
-  (select relrowsecurity from pg_class where relname = 'audit_log'),
+  (select relrowsecurity from pg_class where relname = 'audit_log' and relnamespace = 'public'::regnamespace),
   'audit_log has RLS enabled'
 );
 
 select * from finish();
 rollback;
 ```
+
+Every assertion is qualified with `relnamespace = 'public'::regnamespace` because Supabase provisions its own `storage.objects` table on every project — an unqualified `relname = 'objects'` match returns two rows (`public.objects` and `storage.objects`) and pgTAP's `ok()` errors on the ambiguous subquery. The other seven table names don't currently collide with a system schema, but qualifying all eight keeps the test robust against future Supabase-managed schemas reusing a name.
 
 - [ ] **Step 2: Run it and verify it passes (proves Task 4's migration worked)**
 
