@@ -12,12 +12,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* This app's screens are built with explicit light-theme Tailwind classes
+   throughout (bg-white cards, bg-gray-50 page background, gray-700/900
+   text) and were never designed with a dark palette. The default
+   create-next-app dark-mode media query left text nearly white while
+   every card stayed explicitly white, making text unreadable for anyone
+   with a dark OS/browser preference — so light is forced unconditionally
+   here rather than partially supporting a theme the rest of the app
+   doesn't. */
 
 body {
   background: var(--background);
