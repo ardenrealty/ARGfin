@@ -29,17 +29,28 @@ interface MoneyDistribution {
   remaining: number
 }
 
+interface UpcomingCheckin {
+  deal_id: string
+  client_name: string
+  checkin_date: string
+  remaining: number
+}
+
 export default async function HomePage() {
   const supabase = await createClient()
-  const [{ data: summaryData }, { data: seriesData }, { data: distributionData }] = (await Promise.all([
-    supabase.rpc('dashboard_summary'),
-    supabase.rpc('monthly_pnl_series', { p_months: 6 }),
-    supabase.rpc('money_distribution'),
-  ])) as unknown as [
-    { data: DashboardSummary[] | null },
-    { data: MonthlyPnlRow[] | null },
-    { data: MoneyDistribution[] | null },
-  ]
+  const [{ data: summaryData }, { data: seriesData }, { data: distributionData }, { data: checkinsData }] =
+    (await Promise.all([
+      supabase.rpc('dashboard_summary'),
+      supabase.rpc('monthly_pnl_series', { p_months: 6 }),
+      supabase.rpc('money_distribution'),
+      supabase.rpc('upcoming_checkins', { p_limit: 10 }),
+    ])) as unknown as [
+      { data: DashboardSummary[] | null },
+      { data: MonthlyPnlRow[] | null },
+      { data: MoneyDistribution[] | null },
+      { data: UpcomingCheckin[] | null },
+    ]
+  const upcomingCheckins = (checkinsData ?? []) as UpcomingCheckin[]
   const summary = summaryData?.[0]
   const distribution = distributionData?.[0] as MoneyDistribution | undefined
   const segments: [string, number, string][] = distribution
@@ -100,6 +111,32 @@ export default async function HomePage() {
             </span>
           ))}
         </div>
+      </div>
+
+      <div className="space-y-2 rounded border bg-white p-4">
+        <div className="text-sm font-medium">Ближайшие заселения</div>
+        {upcomingCheckins.length === 0 ? (
+          <div className="text-sm text-gray-500">Нет предстоящих заселений</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-gray-500">
+                <th className="py-1">Клиент</th>
+                <th className="py-1">Заселение</th>
+                <th className="py-1">Доплата</th>
+              </tr>
+            </thead>
+            <tbody>
+              {upcomingCheckins.map((c) => (
+                <tr key={c.deal_id} className="border-b">
+                  <td className="py-1">{c.client_name}</td>
+                  <td className="py-1">{c.checkin_date}</td>
+                  <td className="py-1">{c.remaining.toLocaleString('ru-RU')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
