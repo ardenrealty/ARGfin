@@ -1,4 +1,5 @@
 import { BackupButton } from './BackupButton'
+import { ChangePasswordForm } from './ChangePasswordForm'
 
 export default function SettingsPage() {
   return (
@@ -12,6 +13,7 @@ export default function SettingsPage() {
 
       <section className="space-y-2 rounded border bg-white p-4">
         <h2 className="text-sm font-medium">Смена пароля</h2>
+        <ChangePasswordForm />
       </section>
     </div>
   )
