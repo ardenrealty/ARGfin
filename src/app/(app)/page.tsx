@@ -20,13 +20,39 @@ interface MonthlyPnlRow {
   profit: number
 }
 
+interface MoneyDistribution {
+  ads_expense: number
+  salary_expense: number
+  team_expense: number
+  staff_expense: number
+  personal_expense: number
+  remaining: number
+}
+
 export default async function HomePage() {
   const supabase = await createClient()
-  const [{ data: summaryData }, { data: seriesData }] = (await Promise.all([
+  const [{ data: summaryData }, { data: seriesData }, { data: distributionData }] = (await Promise.all([
     supabase.rpc('dashboard_summary'),
     supabase.rpc('monthly_pnl_series', { p_months: 6 }),
-  ])) as unknown as [{ data: DashboardSummary[] | null }, { data: MonthlyPnlRow[] | null }]
+    supabase.rpc('money_distribution'),
+  ])) as unknown as [
+    { data: DashboardSummary[] | null },
+    { data: MonthlyPnlRow[] | null },
+    { data: MoneyDistribution[] | null },
+  ]
   const summary = summaryData?.[0]
+  const distribution = distributionData?.[0] as MoneyDistribution | undefined
+  const segments: [string, number, string][] = distribution
+    ? [
+        ['Реклама', distribution.ads_expense, '#f97316'],
+        ['ФОТ', distribution.salary_expense, '#8b5cf6'],
+        ['Команда', distribution.team_expense, '#0ea5e9'],
+        ['Подотчёт', distribution.staff_expense, '#eab308'],
+        ['Личное', distribution.personal_expense, '#ec4899'],
+        ['Остаток', Math.max(distribution.remaining, 0), '#22c55e'],
+      ]
+    : []
+  const total = segments.reduce((sum, [, value]) => sum + value, 0)
 
   const cards: [string, number][] = summary
     ? [
@@ -54,6 +80,27 @@ export default async function HomePage() {
       </div>
 
       <MonthlyPnlChart data={seriesData ?? []} />
+
+      <div className="space-y-2 rounded border bg-white p-4">
+        <div className="text-sm font-medium">Распределение денег за месяц</div>
+        <div className="flex h-6 overflow-hidden rounded">
+          {segments.map(([label, value, color]) => (
+            <div
+              key={label}
+              style={{ width: total > 0 ? `${(value / total) * 100}%` : '0%', backgroundColor: color }}
+              title={`${label}: ${value.toLocaleString('ru-RU')}`}
+            />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-3 text-xs">
+          {segments.map(([label, value, color]) => (
+            <span key={label} className="flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+              {label}: {value.toLocaleString('ru-RU')}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
