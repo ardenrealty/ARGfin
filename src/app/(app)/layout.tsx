@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 const NAV_LINKS = [
+  { href: '/', label: 'Дашборд' },
   { href: '/deals', label: 'Сделки' },
   { href: '/reports', label: 'Отчёты' },
   { href: '/accounts', label: 'Счета' },
