@@ -116,6 +116,7 @@ export default async function HomePage() {
         {upcomingCheckins.length === 0 ? (
           <div className="text-sm text-gray-500">Нет предстоящих заселений</div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-gray-500">
@@ -134,6 +135,7 @@ export default async function HomePage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

@@ -66,6 +66,7 @@ export default async function ObjectMarginReportPage({
         />
       </div>
 
+      <div className="overflow-x-auto">
       <table className="w-full border-collapse rounded border bg-white text-sm">
         <thead>
           <tr className="border-b bg-gray-50 text-left">
@@ -86,6 +87,7 @@ export default async function ObjectMarginReportPage({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

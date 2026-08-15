@@ -67,6 +67,7 @@ export default async function PnlReportPage({
         <ExportCsvButton filename={`pnl_${from}_${to}.csv`} headers={['Показатель', 'Сумма']} rows={rows} />
       </div>
 
+      <div className="overflow-x-auto">
       <table className="w-full border-collapse rounded border bg-white text-sm">
         <tbody>
           {rows.map(([label, value]) => (
@@ -77,6 +78,7 @@ export default async function PnlReportPage({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

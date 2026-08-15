@@ -74,6 +74,7 @@ export default async function DealDetailPage({
       <div className="space-y-3">
         <h2 className="text-lg font-semibold">Платежи</h2>
         <PaymentForm dealId={deal.id} accounts={accounts ?? []} />
+        <div className="overflow-x-auto">
         <table className="w-full border-collapse rounded border bg-white text-sm">
           <thead>
             <tr className="border-b bg-gray-50 text-left">
@@ -102,6 +103,7 @@ export default async function DealDetailPage({
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

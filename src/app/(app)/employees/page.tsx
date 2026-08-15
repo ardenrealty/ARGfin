@@ -28,6 +28,7 @@ export default async function EmployeesPage({
           Отмена
         </Link>
       )}
+      <div className="overflow-x-auto">
       <table className="w-full border-collapse rounded border bg-white text-sm">
         <thead>
           <tr className="border-b bg-gray-50 text-left">
@@ -59,6 +60,7 @@ export default async function EmployeesPage({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

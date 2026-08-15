@@ -25,6 +25,7 @@ export default async function CategoriesPage() {
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Категории расходов</h1>
       <CategoryForm />
+      <div className="overflow-x-auto">
       <table className="w-full border-collapse rounded border bg-white text-sm">
         <thead>
           <tr className="border-b bg-gray-50 text-left">
@@ -49,6 +50,7 @@ export default async function CategoriesPage() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
