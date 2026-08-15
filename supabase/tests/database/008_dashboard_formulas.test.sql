@@ -17,6 +17,16 @@ values (
   'Prepaid Client', '2026-01-01', '2026-01-15', 50000, 5000, 'prepaid'
 );
 
+-- dashboard_summary() has no parameters and internally reads from
+-- deal_payment_summary, a security_invoker view — so without scoping the
+-- session to this fixture user via RLS, expected_receivables would sum
+-- every booked/prepaid/checked_in deal in the whole database, not just
+-- this fixture's own. Scope with role + JWT claims (same technique as
+-- 007_report_isolation.test.sql) so this assertion only sees this user's
+-- 2 fixture deals.
+set local role authenticated;
+set local request.jwt.claims to '{"sub":"50000000-0000-0000-0000-000000000001","role":"authenticated"}';
+
 select is(
   (select expected_receivables from dashboard_summary()),
   5000::numeric,
