@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { MonthlyPnlChart } from '@/components/dashboard/MonthlyPnlChart'
 
 interface DashboardSummary {
   account_balance_total: number
@@ -12,10 +13,20 @@ interface DashboardSummary {
   free_cash: number
 }
 
+interface MonthlyPnlRow {
+  month: string
+  revenue: number
+  expenses: number
+  profit: number
+}
+
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data } = (await supabase.rpc('dashboard_summary')) as unknown as { data: DashboardSummary[] | null }
-  const summary = data?.[0]
+  const [{ data: summaryData }, { data: seriesData }] = (await Promise.all([
+    supabase.rpc('dashboard_summary'),
+    supabase.rpc('monthly_pnl_series', { p_months: 6 }),
+  ])) as unknown as [{ data: DashboardSummary[] | null }, { data: MonthlyPnlRow[] | null }]
+  const summary = summaryData?.[0]
 
   const cards: [string, number][] = summary
     ? [
@@ -41,6 +52,8 @@ export default async function HomePage() {
           </div>
         ))}
       </div>
+
+      <MonthlyPnlChart data={seriesData ?? []} />
     </div>
   )
 }
