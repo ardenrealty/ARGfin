@@ -32,8 +32,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between border-b bg-white px-6 py-3">
-        <div className="flex gap-4">
+      <nav className="flex flex-wrap items-center justify-between gap-y-2 border-b bg-white px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm text-gray-700 hover:text-gray-900">
               {link.label}
