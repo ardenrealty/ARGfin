@@ -7,6 +7,15 @@ insert into auth.users (id, email) values
 insert into accounts (id, user_id, name, kind) values
   ('70000000-0000-0000-0000-000000000020', '70000000-0000-0000-0000-000000000010', 'Cash', 'cash');
 
+-- act as that user for RLS-aware selects and inserts. pnl_report(...) has
+-- no SECURITY DEFINER and no manual user_id filter, so it relies entirely
+-- on RLS to scope results — without this, the ads_expense assertions below
+-- would aggregate every user's transactions in the whole database instead
+-- of just this fixture's rows (same technique as 007_report_isolation.test.sql,
+-- 008_dashboard_formulas.test.sql and 002_account_balances.test.sql).
+set local role authenticated;
+set local request.jwt.claims to '{"sub":"70000000-0000-0000-0000-000000000010","role":"authenticated"}';
+
 -- an 'invest' transaction dated in a past month
 insert into transactions (id, user_id, type, amount, account_id, date)
 values (
