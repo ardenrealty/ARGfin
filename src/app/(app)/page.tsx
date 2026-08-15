@@ -8,9 +8,7 @@ interface DashboardSummary {
   profit_month: number
   expected_receivables: number
   unrecognized_received: number
-  capital_invested: number
   personal_withdrawn: number
-  free_cash: number
 }
 
 interface MonthlyPnlRow {

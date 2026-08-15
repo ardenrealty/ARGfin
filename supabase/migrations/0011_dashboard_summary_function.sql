@@ -8,6 +8,7 @@
 -- formula only names the future-date case; the null case is included
 -- deliberately so a received-but-unrecognized balance payment isn't
 -- silently dropped from this card before its deal even has a checkin_date.
+drop function if exists dashboard_summary();
 create or replace function dashboard_summary()
 returns table (
   account_balance_total numeric,
@@ -16,9 +17,7 @@ returns table (
   profit_month numeric,
   expected_receivables numeric,
   unrecognized_received numeric,
-  capital_invested numeric,
-  personal_withdrawn numeric,
-  free_cash numeric
+  personal_withdrawn numeric
 )
 language sql
 stable
@@ -40,12 +39,7 @@ as $$
          and (recognized_at is null or recognized_at > current_date)),
       0
     ) as unrecognized_received,
-    coalesce((select sum(amount) from transactions where deleted_at is null and type = 'invest'), 0) as capital_invested,
-    coalesce((select sum(amount) from transactions where deleted_at is null and type = 'personal'), 0) as personal_withdrawn,
-    coalesce((select sum(amount) from transactions where deleted_at is null and type = 'invest'), 0)
-      + pnl.revenue
-      - (pnl.ads_expense + pnl.salary_expense + pnl.team_expense + pnl.staff_expense)
-      - coalesce((select sum(amount) from transactions where deleted_at is null and type = 'personal'), 0) as free_cash
+    coalesce((select sum(amount) from transactions where deleted_at is null and type = 'personal'), 0) as personal_withdrawn
   from pnl_report(
     date_trunc('month', current_date)::date,
     (date_trunc('month', current_date) + interval '1 month - 1 day')::date
