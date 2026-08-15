@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/employees', label: 'Сотрудники' },
   { href: '/categories', label: 'Категории' },
   { href: '/transactions', label: 'Операции' },
+  { href: '/settings', label: 'Настройки' },
 ]
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
