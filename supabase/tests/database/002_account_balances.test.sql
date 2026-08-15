@@ -1,5 +1,5 @@
 begin;
-select plan(4);
+select plan(6);
 
 -- fixture: one auth user, two accounts
 insert into auth.users (id, email) values
@@ -37,6 +37,12 @@ select is(
   'personal withdrawal decreases account balance'
 );
 
+select is(
+  (select profit from pnl_report(current_date, current_date)),
+  0::numeric,
+  'item 2: a personal withdrawal does not affect profit (personal is not in pnl_report''s revenue/expense whitelist)'
+);
+
 -- transfer 300 from Cash to Bank
 insert into transactions (user_id, type, amount, account_id, account_to_id, date)
 values ('00000000-0000-0000-0000-000000000001', 'transfer', 300,
@@ -56,6 +62,12 @@ select is(
    )),
   800::numeric,
   'transfer does not change combined balance across accounts'
+);
+
+select is(
+  (select profit from pnl_report(current_date, current_date)),
+  0::numeric,
+  'item 6: a transfer between accounts does not affect profit (transfer is not in pnl_report''s revenue/expense whitelist)'
 );
 
 select * from finish();
