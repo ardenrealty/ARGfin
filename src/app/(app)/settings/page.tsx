@@ -1,3 +1,5 @@
+import { BackupButton } from './BackupButton'
+
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
@@ -5,6 +7,7 @@ export default function SettingsPage() {
 
       <section className="space-y-2 rounded border bg-white p-4">
         <h2 className="text-sm font-medium">Бэкап</h2>
+        <BackupButton />
       </section>
 
       <section className="space-y-2 rounded border bg-white p-4">
